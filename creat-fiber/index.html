@@ -1,0 +1,61 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="./js/index.js"></script>
+    <style>
+        table td:nth-child(2) {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <svg id="mind" style="flex: 1;">
+            <defs>
+                <marker id="markerArrow" markerWidth="13" markerHeight="13" refx="2" refy="6" orient="auto">
+                    <path d="M2,2 L2,11 L10,6 L2,2" fill="#A9A9A9" />
+                </marker>
+
+                <filter x="0" y="0" width="1" height="1" id="solid">
+                    <feFlood flood-color="#FFF" />
+                    <feComposite in="SourceGraphic" />
+                </filter>
+            </defs>
+        </svg>
+
+        <div style="flex: 1;">
+            <button id='runBtn' onclick="run()">RUN</button>
+            <button id='autoRunBtn' style="margin-left: 20px;" onclick="autoRun()">AUTORUN</button>
+            <button style="margin-left: 20px;" onclick="refresh()">REFRESH</button>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>nextUnitOfWork</td>
+                        <td id="nextUnitOfWork"></td>
+                    </tr>
+                    <tr>
+                        <td>performUnitOfWork</td>
+                        <td id="performUnitOfWork"></td>
+                    </tr>
+                    <tr>
+                        <td>beginWork</td>
+                        <td id="beginWork"></td>
+                    </tr>
+                    <tr>
+                        <td>completeUnitOfWork</td>
+                        <td id="completeUnitOfWork"></td>
+                    </tr>
+                    <tr>
+                        <td>completeWork</td>
+                        <td id="completeWork"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>
