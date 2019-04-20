@@ -175,6 +175,12 @@ const rectList = [{
     }]
 }];
 
+const setAttributes = (ele, attrs) => {
+    Object.keys(attrs).forEach((key) => {
+        ele.setAttribute(key, attrs[key]);
+    });
+};
+
 const getSVGChildren = () => {
     const res = [];
 
@@ -183,19 +189,24 @@ const getSVGChildren = () => {
         groupNode.setAttribute('transform', `translate(${transform.x},${transform.y})`);
 
         const rectNode = createSVG('rect');
-        rectNode.setAttribute('rx', 20);
-        rectNode.setAttribute('ry', 20);
-        rectNode.setAttribute('width', rectWidth);
-        rectNode.setAttribute('height', rectHeight);
-        rectNode.setAttribute('fill', '#F78A4A');
+        setAttributes(rectNode, {
+            'rx': 20,
+            'ry': 20,
+            'width': rectWidth,
+            'height': rectHeight,
+            'fill': '#F78A4A',
+            'id': text.replace(/\[(\d){1,}\]/g, '')
+        });
 
         const textNode = createSVG('text');
-        textNode.setAttribute('x', rectWidth * 0.5);
-        textNode.setAttribute('y', rectHeight * 0.5);
-        textNode.setAttribute('dominant-baseline', 'middle');
-        textNode.setAttribute('text-anchor', 'middle');
-        textNode.setAttribute('fill', '#FFF');
         textNode.textContent = text;
+        setAttributes(textNode, {
+            'x': rectWidth * 0.5,
+            'y': rectHeight * 0.5,
+            'dominant-baseline': 'middle',
+            'text-anchor': 'middle',
+            'fill': '#FFF'
+        });
 
         groupNode.appendChild(rectNode);
         groupNode.appendChild(textNode);
@@ -204,23 +215,28 @@ const getSVGChildren = () => {
         lines.forEach((line) => {
             const lineGroupNode = createSVG('g');
             const lineNode = createSVG('line');
-            lineNode.setAttribute('stroke', line.color || '#000');
-            lineNode.setAttribute('fill', 'none');
-            lineNode.setAttribute('stroke-width', 2);
-            lineNode.setAttribute('marker-end', 'url(#markerArrow)');
-            lineNode.setAttribute('x1', line.start[0]);
-            lineNode.setAttribute('y1', line.start[1]);
-            lineNode.setAttribute('x2', line.end[0]);
-            lineNode.setAttribute('y2', line.end[1]);
+            setAttributes(lineNode, {
+                'id': line.text.replace(/\[(\d){1,}\]/g, ''),
+                'stroke': line.color || '#000',
+                'fill': 'none',
+                'stroke-width': 2,
+                'marker-end': 'url(#markerArrow)',
+                'x1': line.start[0],
+                'y1': line.start[1],
+                'x2': line.end[0],
+                'y2': line.end[1]
+            });
 
             const lineTextNode = createSVG('text');
-            lineTextNode.setAttribute('x', (line.start[0] + line.end[0]) * 0.5);
-            lineTextNode.setAttribute('y', (line.start[1] + line.end[1]) * 0.5);
-            lineTextNode.setAttribute('dominant-baseline', 'middle');
-            lineTextNode.setAttribute('text-anchor', 'middle');
-            lineTextNode.setAttribute('stroke', 'black');
-            lineTextNode.setAttribute('filter', 'url(#solid)');
             lineTextNode.textContent = line.text;
+            setAttributes(lineTextNode, {
+                'x': (line.start[0] + line.end[0]) * 0.5,
+                'y': (line.start[1] + line.end[1]) * 0.5,
+                'dominant-baseline': 'middle',
+                'text-anchor': 'middle',
+                'stroke': 'black',
+                'filter': 'url(#solid)'
+            });
 
             lineGroupNode.appendChild(lineNode);
             lineGroupNode.appendChild(lineTextNode);
@@ -322,14 +338,8 @@ const frames = [
         phase: 'completeWork',
         target: 'p.level4-p2'
     }, {
-        phase: 'completeUnitOfWork',
-        target: 'div.level3-div'
-    }, {
         phase: 'completeWork',
         target: 'div.level3-div'
-    }, {
-        phase: 'completeUnitOfWork',
-        target: 'div.level2-div1'
     }, {
         phase: 'completeWork',
         target: 'div.level2-div1'
@@ -358,26 +368,14 @@ const frames = [
         phase: 'completeWork',
         target: 'p.level3-p'
     }, {
-        phase: 'completeUnitOfWork',
-        target: 'div.level2-div2'
-    }, {
         phase: 'completeWork',
         target: 'div.level2-div2'
-    }, {
-        phase: 'completeUnitOfWork',
-        target: 'div.level1'
     }, {
         phase: 'completeWork',
         target: 'div.level1'
     }, {
-        phase: 'completeUnitOfWork',
-        target: 'ClassComponent'
-    }, {
         phase: 'completeWork',
         target: 'ClassComponent'
-    }, {
-        phase: 'completeUnitOfWork',
-        target: 'HostRoot'
     }, {
         phase: 'completeWork',
         target: 'HostRoot'
@@ -399,7 +397,7 @@ const run = () => {
         return;
     }
 
-    const svg = document.getElementById('mind');    
+    const svg = document.getElementById('mind');
     const frame = frames[frameIndex++];
 
     if (typeof frame === 'number') {
@@ -411,11 +409,22 @@ const run = () => {
             clearPhaseText();
         }
 
-        if (phase === 'completeUnitOfWork' && document.getElementById('beginWork').textContent !== target) {
+        if (phase === 'completeWork' && document.getElementById('beginWork').textContent !== target) {
             clearPhaseText();
         }
 
-        document.getElementById(phase).textContent = target;
+        const phaseEle = document.getElementById(phase);
+        const targetEle = document.getElementById(target);
+        const className = 'rect-border-circle';
+        phaseEle.textContent = target;
+
+        if (!targetEle.classList.contains(className)) {
+            const otherEles = document.getElementsByClassName(className);
+            for (let i = 0; i < otherEles.length; i++) {
+                otherEles[i].classList.remove(className);
+            };
+            targetEle.classList.add(className);
+        }
     }
 };
 
